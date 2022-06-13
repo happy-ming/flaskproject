@@ -1,9 +1,9 @@
-from flask import Flask
+from flask import Flask,render_template,request
 from flask_migrate import Migrate
 
 from models import User,Address
 from exts import db
-import config
+from login_form import Login
 
 app = Flask(__name__)
 # 配置数据库地址
@@ -19,8 +19,6 @@ db.init_app(app)
 # 迁移，绑定app和数据库
 migrate = Migrate(app,db)
 
-
-
 @app.route('/')
 def hello_world():
     user1 = User(username='张三')
@@ -32,6 +30,18 @@ def hello_world():
     db.session.commit()
 
     return 'Hello World!'
+
+@app.route('/login',methods=['POST','GET'])
+def login():
+    if request.method == "GET":
+        return render_template('login.html')
+    else:
+        # 获取form表单
+        form = Login(request.form)
+        if form.validate():
+            return "登录成功"
+        else:
+            return "邮箱或者密码错误！"
 
 
 if __name__ == '__main__':
